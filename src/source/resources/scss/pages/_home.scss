@@ -1,0 +1,156 @@
+// Hero section
+.carousel {
+  height: 100vh;
+
+  img {
+    height: 100vh;
+  }
+
+  .carousel-indicators {
+    margin-bottom: 4rem;
+    [data-bs-target] {
+      @include box(2rem, 2rem);
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+    }
+    z-index: 1;
+  }
+
+  .carousel-caption {
+    bottom: 6rem;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    @include box(4rem, 4rem);
+  }
+}
+
+.banner {
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
+
+.banner-row {
+  display: flex;
+}
+
+.banner-img {
+  background: linear-gradient(
+      0deg,
+      rgba(49, 56, 62, 0.3) 0%,
+      rgba(49, 56, 62, 0.3) 100%
+    ),
+    lightgray 50% / cover no-repeat;
+}
+
+.banner-article {
+  margin: auto auto;
+  padding: 0 4rem;
+  .main-heading {
+    margin-bottom: 3rem;
+    font-size: 5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .paragraph {
+    color: #31383e;
+    text-align: justify;
+    font-family: Ubuntu;
+    font-size: 2rem;
+    font-weight: 400;
+  }
+}
+
+.trend {
+  margin-bottom: 10rem;
+  .main-heading {
+    line-height: 3.5rem;
+    border-radius: 15px;
+    background: #337ab7;
+    color: #fff;
+    text-align: center;
+    height: 3.5rem;
+    width: 15vw;
+  }
+  .h2 {
+    display: inline-block;
+  }
+  .rectangle {
+    background: #337ab7;
+    height: 0.5rem;
+    padding: 0 0;
+    margin: auto 0;
+  }
+
+  .trend-row {
+    margin-top: 4rem;
+  }
+  .trend-card {
+    margin: 0 0rem;
+    border-radius: 0;
+    border: 1px solid #31383e;
+    padding: 0 0;
+  }
+  .trend-card-img {
+    background-color: #fff;
+    height: 30rem;
+    .trend-prod-img {
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  .trend-card-title {
+    color: #000;
+    font-family: Inter;
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    padding: 0 0.5rem;
+  }
+  .trend-card-price {
+    text-align: center;
+    color: #000;
+    font-weight: 700;
+  }
+  .trend-card-btn {
+    text-transform: uppercase;
+    border-radius: 0;
+    background: #31383e;
+    font-weight: 700;
+    color: #fff;
+  }
+  figure {
+    a.btn:link,
+    a.btn:visited {
+      border-radius: 0;
+      background: #31383e;
+    }
+  }
+  .see-more-btn {
+    margin-top: 4rem;
+    margin-bottom: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .trend-btn {
+      width: 15vw;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 3px solid #337ab7;
+      background: #fff;
+      border-radius: 15px;
+      color: #337ab7;
+    }
+    .trend-btn:hover {
+      color: #fff;
+      background-color: #337ab7;
+    }
+  }
+}
+
+.far-from-head {
+  margin-top: 17rem;
+  margin-bottom: 3rem;
+}

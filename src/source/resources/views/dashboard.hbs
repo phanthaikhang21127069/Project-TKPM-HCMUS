@@ -1,0 +1,81 @@
+<section class="sales-page container">
+  <section class='row'>
+    {{>sales-page}}
+    <section class='dashboard col-10'>
+      <p class='dashboard-breadcrumb'>Dashboard</p> 
+      <section class="dashboard-general col-8 mx-auto">
+        <ul class="dashboard-general-list row gx-0 mb-5">
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-solid fa-money-bill-wave text-center "></i>
+              <span>Total Income</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{convertMoney _income}}</p>
+          </li>
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-solid fa-truck text-center"></i>
+              <span>Total Orders</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{_order}}</p>
+          </li>
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-solid fa-box-open text-center"></i>
+              <span>Total Stock</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{_stock}}</p>
+          </li>
+        </ul>
+        <ul class="dashboard-general-list row gx-0 mb-5">
+          
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-solid fa-comments text-center"></i>
+              <span>Total Reviews</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{_review}}</p>
+          </li>
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-sharp fa-solid fa-badge-check text-center"></i>
+              <span>Successful Orders</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{_sucOrder}}</p>
+          </li>
+          <li class="dashboard-general-item col d-flex flex-column align-items-center">
+            <p class="dashboard-general-title d-flex align-items-center">
+              <i class="fa-solid fa-star text-center"></i>
+              <span>Average Rating</span>
+            </p>
+            <p class="dashboard-general-content fw-bold">{{_rating}}</p>
+          </li>
+        </ul>
+        {{!-- *****************  --}}
+       <section class="d-flex align-items-center margin-top: 3rem; margin-left: 2rem;">
+         <div class="pie animate no-round" style="--p:{{_percent}}; font-size: 3rem; margin: 0 2rem;"> {{_percent}}%</div>
+         
+          <section id="skills" class="toad-fullscreen">
+                <article class="skills">
+                    <div class="t-6">
+                        <p>{{_document}} documents<span></span><span class="skills" style="width: {{calcPercent _document _stock}}%;"></span></p>
+                    </div>
+                    <div class="t-6">
+                        <p>{{_uniform}} uniforms<span></span><span class="skills" style="width: {{calcPercent _uniform _stock}}%;"></span></p>
+                    </div>
+         
+                    <div class="t-6">
+                        <p>{{_stationery}} stationeries<span></span><span class="skills" style="width: {{calcPercent _stationery _stock}}%;"></span></p>
+                    </div>
+                    <div class="t-6">
+                        <p>{{_other}} others<span></span><span class="skills" style="width: {{calcPercent _other _stock}}%;"></span></p>
+                    </div>
+                </article>
+            </section>
+       </section>
+        {{!-- ********  --}}
+      </section>
+    </section>
+  </section>
+</section>
+</div>

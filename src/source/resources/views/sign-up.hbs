@@ -1,0 +1,106 @@
+<div class='sign-up'>
+  <h2 class='su-header'>SIGN UP</h2>
+  <div class='horizontal-line'></div>
+
+  <form method='POST' class='su-form' action='/account/sign-up'>
+    <div class='su-info-input'>
+      <label class='su-info' for='firstName'>First Name</label><br />
+      <input
+        class='su-input'
+        type='text'
+        id='firstName'
+        name='firstName'
+        required
+      />
+      <br />
+    </div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='lastName'>Last Name</label><br />
+      <input
+        class='su-input'
+        type='text'
+        id='lastName'
+        name='lastName'
+        required
+      /><br />
+    </div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='dob'>Date of Birth</label><br />
+      <input class='su-input' type='date' id='dob' name='dob' required /><br />
+      <p id='dob-error-msg' class='error-message'></p>
+    </div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='phone'>Phone Number</label><br />
+      <input class='su-input' type='text' id='phone' name='phone' required /><br
+      /></div>
+
+    <div class='su-info-input'><label
+        class='su-info'
+        for='address'
+      >Address</label><br />
+      <input class='su-input' type='text' id='address' name='address' /><br
+      /></div>
+
+    <div class='su-info-input'><label class='su-info' for='job'>Job</label><br
+      />
+      <input class='su-input' type='text' id='job' name='job' /><br /></div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='email'>Email</label><br />
+      <input
+        class='su-input'
+        type='email'
+        id='email'
+        name='email'
+        required
+      /><br />
+      <p id='email-error-msg' class='error-message'></p>
+    </div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='password'>Password</label><br />
+      <input
+        class='su-input'
+        type='password'
+        id='password'
+        name='password'
+        required
+      /><br />
+      <p id='password-valid'></p>
+    </div>
+
+    <div class='su-info-input'>
+      <label class='su-info' for='confirm-pwd'>Confirm Password</label><br />
+      <input
+        class='su-input'
+        type='password'
+        id='confirm-pwd'
+        name='confirm-pwd'
+        required
+      /><br />
+      <p id='password-match-msg'></p>
+    </div>
+
+    <input
+      class='su-checkbox'
+      type='checkbox'
+      id='accept-sign-up-form'
+      name='accept-sign-up-form'
+      value='Accept with sign up form'
+    />
+    <label class='su-text' for='accept-sign-up-form'>I have read and agreed to
+      Terms and Conditions</label><br />
+    <input class='su-button' type='submit' />
+    <p id='accept-error-msg' class='error-message'></p>
+  </form>
+  {{#if registerMessage}}
+    <p class='alert alert-warning mt-5 text-center'>
+      {{{registerMessage}}}
+    </p>
+  {{/if}}
+</div>
+
+<script src='/js/sign-up.js'></script>

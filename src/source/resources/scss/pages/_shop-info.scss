@@ -1,0 +1,135 @@
+:root {
+  --grey: #f6f6f6;
+  --dark-blue: #337ab7;
+  --light-blue: #d9edf7;
+}
+
+.shop-info {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 32rem;
+  padding-right: 32rem;
+  padding-top: 21rem;
+  padding-bottom: 5rem;
+  font-size: 2rem;
+
+  .trend {
+    margin-bottom: 5rem;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: calc(2%) 0;
+    box-sizing: border-box;
+    background-color: var(--grey);
+
+    .logo-section {
+      display: flex;
+      .shop-logo {
+        width: 9rem;
+        height: 9rem;
+        border-radius: 50%;
+        margin-right: 4.5rem;
+        display: inline-block;
+      }
+
+      .name-report {
+        display: inline-block;
+
+        .shop-name {
+          font-size: 2.7rem;
+          font-weight: bold;
+        }
+
+        .button {
+          font-size: 2rem;
+          font-weight: 500;
+          border-radius: 0.5rem;
+          padding: 0.5rem 0rem;
+          transition: all 0.3s;
+          text-align: center;
+          width: calc(100%);
+          min-width: 10.5rem;
+          background-color: var(--light-blue);
+          color: black;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          margin-top: 1.7rem;
+          margin-right: 3rem;
+
+          &:hover {
+            background-color: var(--dark-blue);
+            color: white;
+          }
+        }
+
+        .button:last-child {
+          margin-right: 0;
+        }
+
+        .button.clicked {
+          background-color: var(--dark-blue);
+          color: white;
+
+          &:hover {
+            background-color: var(--light-blue);
+            color: black;
+          }
+        }
+
+        .follow-button.followed {
+          background-color: #337ab7;
+          color: white;
+        }
+      }
+    }
+
+    .info-section {
+      font-size: 2rem;
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+
+        .category {
+          font-weight: 500;
+        }
+
+        .content {
+          margin-left: 7rem;
+        }
+      }
+      .info-row:not(:last-child) {
+        padding-bottom: 0.7rem;
+      }
+    }
+  }
+  .trend-card-btn.btn {
+    background-color: $color-text-dark;
+    border-radius: 0;
+    &:hover {
+      background-color: $color-text-dark;
+    }
+  }
+  .card {
+    margin-bottom: 2rem;
+    cursor: pointer;
+    .trend-prod-img {
+      object-fit: contain;
+      height: 30rem;
+    }
+    .trend-card-title {
+      padding: 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.8rem;
+      font-size: 1.6rem;
+    }
+    .trend-card-price {
+      padding-bottom: 1rem;
+    }
+  }
+}

@@ -1,0 +1,188 @@
+.header {
+  background-color: rgba(59, 153, 215, 0.2);
+  transition: all 0.2s;
+  z-index: 2;
+
+  .logo {
+    padding: 0.5rem 2rem;
+    img {
+      width: unset;
+    }
+  }
+
+  .cart-icon,
+  .announce-icon {
+    font-size: $font-size-quaternary;
+
+    &::before {
+      color: $color-text-light;
+      cursor: pointer;
+    }
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+
+  .badge {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+    -webkit-border-radius: 0.9rem;
+    -moz-border-radius: 0.9rem;
+    border-radius: 0.9rem;
+  }
+
+  .label-warning[href],
+  .badge-warning[href] {
+    background-color: #ff7971;
+  }
+  #lblCartCount {
+    font-size: 1.2rem;
+    background: #ff7971;
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+    vertical-align: top;
+    margin-left: -0.5rem;
+    z-index: 1;
+  }
+
+  .announce-container {
+    position: relative;
+  }
+
+  .announce-icon {
+    font-size: 2.4rem;
+    display: block;
+    margin-right: 4rem;
+    position: relative;
+    &.has-noti::after {
+      content: "";
+      @include abs-pos(0, 0);
+      @include box(1rem, 1rem, #ff7971);
+      border-radius: 50%;
+    }
+  }
+
+  .announce-list {
+    display: none;
+    flex-direction: column;
+    @include abs-pos(calc(100% + 2rem), -100%);
+    background-color: $color-white;
+    min-width: 50rem;
+    max-height: 40rem;
+    overflow: scroll;
+    box-shadow: 0 0 1rem 0 $color-text-grey;
+    padding: 0.5rem;
+    user-select: none;
+    transition: all ease-in 0.5s;
+    // hide scrollbar but allow scrolling
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .announce-link {
+      display: inline-block;
+      padding: 0.4rem;
+      position: relative;
+      border: 0.4rem solid $color-white;
+      border-bottom: 0.1rem solid $color-border;
+      padding: 1rem;
+      width: 100%;
+      &:hover {
+        background-color: darken($color: $color-text-light, $amount: 5);
+      }
+    }
+
+    .announce-link.unread {
+      &::before {
+        content: "";
+        @include box(1.5rem, 1.5rem, $color-primary);
+        @include abs-pos(1rem, 1rem);
+        border-radius: 50%;
+      }
+      &:hover {
+        background-color: darken($color: $color-text-light, $amount: 5);
+      }
+      background-color: $color-text-light;
+    }
+
+    .announce-title {
+      @include font($font-size-quaternary, 600);
+      margin-bottom: 0.5rem;
+    }
+    .announce-description {
+      font-size: $font-size-secondary;
+      margin-bottom: 2.4rem;
+    }
+    .announce-date {
+      font-size: 1.4rem;
+      text-align: end;
+    }
+  }
+
+  .announce-icon.noti-open + .announce-list {
+    display: flex;
+  }
+
+  .user-profile-btn {
+    display: flex;
+    align-items: center;
+    @include font(2rem, 600, $color-white);
+    .user-avatar {
+      font-size: 3rem;
+      margin-right: 1rem;
+    }
+  }
+}
+
+.search-bar {
+  position: relative;
+
+  .search-bar {
+    position: relative;
+
+    .search-input {
+      height: 3.4rem;
+      width: 100%;
+      border-radius: 2rem;
+      background-color: rgba($color: $color-white, $alpha: 0.2);
+      color: #fff;
+
+      &::placeholder {
+        color: #fff;
+      }
+    }
+
+    .search-icon-link {
+      width: 2rem;
+      font-size: 1.6rem;
+      position: absolute;
+      right: 2rem;
+      top: 2rem;
+      background-color: transparent;
+
+      .search-icon::before {
+        color: #fff;
+      }
+    }
+  }
+}
+
+.header.light {
+  background-color: $color-primary;
+
+  .search-input {
+    background-color: $color-white;
+    color: $color-text-dark;
+
+    &::placeholder {
+      color: $color-text-dark;
+    }
+  }
+
+  .search-icon::before {
+    color: $color-text-dark !important;
+  }
+}

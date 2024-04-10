@@ -1,0 +1,184 @@
+<div class="container">
+    <div class="account-profile-main container-fluid">
+        <div class="row">
+            <div class='col-3'>
+                <div class='avatar'>
+                    <div class='avatar-left'>
+                        <i class='fa-solid fa-user'></i>
+                    </div>
+
+                    <div class='avatar-right'>
+                        <div class='info-avatar'>
+                            <span class='avatar-name'>{{user.firstName}} {{user.lastName}}</span>
+                            <span class='avatar-mail mail'>{{user.email}}</span>
+                        </div>
+                        <div class='signup-btn'>
+                            <button type="button" class="btn btn-outline-secondary">SIGN OUT</button>
+                        </div>
+                    </div>
+                </div>
+                <div class='my-account'>
+                    <a href='http://localhost:3000/account/my-profile/{{user._id}}'>
+                        <button type='button' class='btn btn-outline-secondary'>
+                            <i class='fa-solid fa-pen-to-square'></i>
+                            <span class='page-link'>My account</span>
+                        </button>
+                    </a>
+                </div>
+                <div class='my-order'>
+                    <a href='http://localhost:3000/account/my-order/{{user._id}}'>
+                        <button type='button' class='btn btn-outline-secondary bg-blue'>
+                            <i class='fa-solid fa-cart-shopping color-white'></i>
+                            <span class='page-link color-white'>My order</span>
+                        </button>
+                    </a>
+                </div>
+                <div class='become-seller'>
+                    <a href='http://localhost:3000/account/become-seller/{{user._id}}'>
+                        <button type='button' class='btn btn-outline-secondary'>
+                            <i class='fa-solid fa-user'></i>
+                            <span class='page-link'>Become seller</span>
+                        </button>
+                    </a>
+                </div>
+                <div class='remain'></div>
+            </div>
+            <div class="col-9 part-right-my-order overflow-auto">
+                {{!-- {{>statusbar-myorder}} --}}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link background_emphasis text-white"
+                                href="http://localhost:3000/account/my-order/{{user._id}}">Success</a>
+                        </li>
+                        {{!-- <li class="page-item"><a class="page-link text_black"
+                                href="http://localhost:3000/myorderdelivery">Delivering</a></li> --}}
+                        <li class="page-item"><a class="page-link text_black"
+                                href="http://localhost:3000/account/my-order-pending/{{user._id}}">Pending</a></li>
+                        <li class="page-item"><a class="page-link text_black"
+                                href="http://localhost:3000/account/my-order-cancelled/{{user._id}}">Cancelled</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                {{#each orders}}
+                    {{#each this.detail}}
+                        {{#with ../../this._id as currentOrderId}}
+                            <div class="card">
+                                <div class="card-header alert alert-success" role="alert">
+                                    <i class="fa-solid fa-bag-shopping"></i>
+                                    {{../this.idSeller.shopName}}
+                                </div>
+                                <div class="card-body">
+                                    <div class="contain position-relative">
+                                        <div class="left">
+                                            <img src="{{this.idProduct.image}}" class="img-fluid rounded-start" alt="...">
+                                        </div>
+                                        <div class="middle position-relative">
+                                            <div class="card-body">
+                                                <h2 class="card-title fw-bold">{{this.idProduct.name}}</h2>
+                                                <p class="card-text fs-5 fw-light">This is a wider card with supporting text below
+                                                    as a natural
+                                                    lead-in to additional
+                                                    content. This content is a little bit longer.</p>
+                                                <p class="card-text"><small class="text-muted fw-bolder">Price: {{formatCurrency
+                                                        this.idProduct.price}}</small></p>
+                                                <p class="card-text"><small class="text-muted fw-bolder">Quantity:
+                                                        x{{this.quantity}}</small></p>
+                                                <p class="card-text position-absolute bottom-0 end-0">
+                                                    <small class="text-muted fs-2 fw-bold">TOTAL: {{formatCurrency
+                                                        (calculateTotalPrice this.idProduct.price this.quantity)}}</small>
+                                                </p>
+                                                <p class="card-text position-absolute bottom-0 start-0">
+                                                    <small class="text-muted order-date">Date:
+                                                        {{dateOfOrder ../this.date}}
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer evaluate-product">
+                                    <button id="evaluateButton_{{this.idProduct._id}}" type="button"
+                                        class="btn btn-secondary text-uppercase btn-related-evaluation {{booleanToString this.isEvaluated}}"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        data-bs-whatever="@mdo">Evaluate</button>
+
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header alert alert-info" role="alert">
+                                                    <h2 class="modal-title" id="exampleModalLabel">Evaluate the product</h2>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <form method="POST"
+                                                    action="/evaluate/order-success/{{currentOrderId}}">
+                                                    <div class="modal-body evaluate-body">
+                                                        <div class="mb-3 rating">
+                                                            {{!-- <label for="recipient-name"
+                                                                class="col-form-label">Recipient:</label>
+                                                            <input type="text" class="form-control" id="recipient-name"> --}}
+                                                            <label for="message-text" class="col-form-label fw-bold">Satisfaction
+                                                                level (Star rating): </label>
+                                                            {{!-- <span>Satisfaction level (Star rating)</span> --}}
+                                                            <div class="form-check form-check-inline first-choice">
+                                                                <input class="form-check-input" type="radio" name="rate"
+                                                                    id="inlineRadio1" value=1>
+                                                                <label class="form-check-label" for="inlineRadio1">1</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="rate"
+                                                                    id="inlineRadio2" value=2>
+                                                                <label class="form-check-label" for="inlineRadio2">2</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="rate"
+                                                                    id="inlineRadio1" value=3>
+                                                                <label class="form-check-label" for="inlineRadio1">3</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="rate"
+                                                                    id="inlineRadio2" value=4>
+                                                                <label class="form-check-label" for="inlineRadio2">4</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="rate"
+                                                                    id="inlineRadio1" value=5>
+                                                                <label class="form-check-label" for="inlineRadio1">5</label>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="mb-3 review">
+                                                            <label for="message-text" class="col-form-label fw-bold">Review:</label>
+                                                            <textarea class="form-control input-size" id="message-text"
+                                                                name="review" placeholder="Write to review..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button id="post" type="submit"
+                                                            class="btn btn-primary btn-related-evaluation">Post</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/with}}
+                    {{/each}}
+                {{/each}}
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+{{!-- <script src='js/my-order.js'></script> --}}

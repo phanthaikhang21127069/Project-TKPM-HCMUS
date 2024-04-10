@@ -1,0 +1,41 @@
+.sales-page {
+  margin-top: 14rem;
+  .vertical-nav {
+    background-color: #f6f6f6;
+    padding: 1.5rem;
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2rem;
+      text-align: center;
+      color: $color-primary-shade;
+    }
+
+    .nav-list {
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1rem;
+        cursor: pointer;
+        a {
+          display: flex;
+          align-items: center;
+          font-size: 1.7rem;
+          color: $color-text-dark;
+
+          h2 {
+            font-size: 1.7rem;
+            margin-bottom: 0;
+            margin-left: 0.5rem;
+          }
+        }
+
+        &:hover a {
+          opacity: 0.8;
+          color: $color-primary-shade;
+        }
+      }
+    }
+  }
+}
