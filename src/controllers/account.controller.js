@@ -3,7 +3,7 @@ const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const Evaluate = require("../models/evaluate.model");
 const fs = require("fs");
-const path = require("path");
+// const path = require("path");
 const passport = require("passport");
 const { sendForgotPasswordMail } = require("../utils/mail");
 const bcrypt = require("bcrypt");
@@ -11,8 +11,8 @@ const {
   mutipleMongooseToObject,
   mongooseToObject,
 } = require("../utils/mongoose");
-const mongoose = require("../utils/mongoose");
-class acccountController {
+// const mongoose = require("../utils/mongoose");
+class accountController {
   // [GET] account/sign-up
   getSignUp = async (req, res, next) => {
     try {
@@ -140,7 +140,7 @@ class acccountController {
     res.render("forgot-password");
   };
 
-  // [POST] acccount/forgot
+  // [POST] account/forgot
   forgotPassword = async (req, res, next) => {
     let email = req.body.email;
     // Check email tồn tại
@@ -638,4 +638,4 @@ class acccountController {
   };
 }
 
-module.exports = new acccountController();
+module.exports = new accountController();
