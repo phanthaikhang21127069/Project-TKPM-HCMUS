@@ -18,6 +18,10 @@ class ProductStock {
             this.observers[productId].forEach(observer => observer(stock));
         }
     }
+
+    getStock(productId) {
+        return this.products.get(productId) || 0;  // Return 0 if no stock information is present
+    }
 }
 
 module.exports = ProductStock;

@@ -235,44 +235,44 @@ class productController {
   // [POST] product/edit/save/:id
   updateProduct = async (req, res, next) => {
     try {
-      console.log('Starting product update process');
+      // console.log('Starting product update process');
   
       const formData = req.body;
-      console.log('Received form data:', formData);
+      // console.log('Received form data:', formData);
   
       const product = await Product.findById(req.params.id);
-      console.log(`Product found: ${product._id}`);
+      // console.log(`Product found: ${product._id}`);
   
       if (req.file) {
           // Assuming the full server path is added before storing it, which needs to be removed
           const imagePath = `./source/public${product.image}`; // Full path for server operations
-          console.log(`Handling new file upload, checking existing image at: ${imagePath}`);
+          // console.log(`Handling new file upload, checking existing image at: ${imagePath}`);
   
           // Check and delete the existing image if it's not the default
           if (product.image !== "\\img\products\default.png" && fs.existsSync(imagePath)) {
-            console.log('Existing image found, deleting...');
+            // console.log('Existing image found, deleting...');
             fs.unlinkSync(imagePath);
           } else {
-            console.log('No existing image to delete or default image used');
+            // console.log('No existing image to delete or default image used');
           }
   
           // Correctly remove 'source/public/' from the path before saving it in formData
-          console.log('req.file.path:', req.file.path);
+          // console.log('req.file.path:', req.file.path);
           formData.image = '/' + path.normalize(req.file.path).replace(/\\/g, '/').replace('source/public/', '');
-          console.log('Updated image path for formData:', formData.image);
+          // console.log('Updated image path for formData:', formData.image);
       } else if (product.image === "\\img\products\default.png") {
           formData.image = "/img/products/default.png";
-          console.log('Using default image for product');
+          // console.log('Using default image for product');
       }
   
       formData.status = "Pending";
-      console.log('Set product status to Pending');
+      // console.log('Set product status to Pending');
   
       await Product.updateOne({ _id: req.params.id }, formData);
-      console.log(`Product update complete for ID: ${req.params.id}`);
+      // console.log(`Product update complete for ID: ${req.params.id}`);
   
       res.render("message/processing-request");
-      console.log('Processing request message rendered');
+      // console.log('Processing request message rendered');
     } catch (err) {
       console.error('Error during product update:', err);
       next(err);

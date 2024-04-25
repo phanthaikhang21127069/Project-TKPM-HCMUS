@@ -1,17 +1,18 @@
-const hbs = require("express-handlebars");
+// const hbs = require("express-handlebars");
 const Order = require("../models/order.model");
 const Account = require("../models/account.model");
 const Product = require("../models/product.model");
+const { getIo } = require('../source/public/js/socket');
 
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
+// const sequelize = require("sequelize");
+// const Op = sequelize.Op;
 
 const {
   mutipleMongooseToObject,
   mongooseToObject,
 } = require("../utils/mongoose");
 
-var allProducts;
+// var allProducts;
 
 class orderController {
   // [GET] order/manage-order
@@ -89,6 +90,7 @@ class orderController {
 
   acceptOrder = async (req, res, next) => {
     try {
+      const io = getIo();
       const orderId = req.params.id;
       const order = await Order.findById(orderId);
       // console.log(order);
@@ -96,7 +98,12 @@ class orderController {
         const productInfo = await Product.findById(product.idProduct);
         productInfo.stock -= product.quantity;
         await productInfo.save();
-        console.log(productInfo);
+
+        // Emitting an event to all connected clients that the stock has been updated
+        // console.log('acceptOrder', productInfo.stock);
+        io.emit('stockUpdate', { productId: product.idProduct.toString(), newStock: productInfo.stock });
+
+        // console.log(productInfo);
       });
       await Order.updateOne(
         { _id: orderId },

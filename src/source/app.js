@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require('http');
-const socketIo = require('socket.io');
+// const socketIo = require('socket.io');
 const hbs = require("express-handlebars");
 const path = require("path");
 const methodOverride = require("method-override");
@@ -21,27 +21,8 @@ redisClient.connect().catch(console.error);
 
 const liveReloadServer = livereload.createServer();
 const app = express();
-
 // socket.io
 const server = http.createServer(app);
-const io = socketIo(server);
-const ProductStock = require('./public/js/ProductStock.js');
-const productStock = new ProductStock();
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  // When a user navigates to a product detail page on your website, 
-  // the client-side JavaScript could emit a 'productView' event through Socket.IO
-  socket.on('productView', (productId) => {
-      // Fetch the stock from your product stock management system
-      const stock = productStock.getStock(productId);
-      socket.emit('stockUpdate', { productId, stock });
-  });
-
-  socket.on('disconnect', () => {
-      console.log('User disconnected');
-  });
-});
 
 // Livereload for automatically refresh browser
 liveReloadServer.server.once("connection", () => {
@@ -131,4 +112,4 @@ app.use((req, res, next) => {
 // ROUTES INIT
 route(app);
 
-module.exports = app;
+module.exports = { app, server};
