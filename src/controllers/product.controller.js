@@ -3,9 +3,10 @@ const fs = require("fs");
 const Evaluate = require("../models/evaluate.model");
 const Account = require("../models/account.model");
 const Order = require("../models/order.model");
+const path = require('path');
 
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
+// const sequelize = require("sequelize");
+// const Op = sequelize.Op;
 
 const {
   mutipleMongooseToObject,
@@ -13,7 +14,7 @@ const {
 } = require("../utils/mongoose");
 const { formatCurrency } = require("../helpers/handlebars");
 
-var allProducts;
+// var allProducts;
 
 class productController {
   // [GET] product/dashboard
@@ -211,22 +212,69 @@ class productController {
   };
 
   // [POST] product/edit/save/:id
+  // updateProduct = async (req, res, next) => {
+  //   try {
+  //     const formData = req.body;
+  //     const product = await Product.findById(req.params.id);
+  //     if (req.file) {
+  //       if (product.image != "/img/products/default.png") {
+  //         fs.unlinkSync(`./source/public${product.image}`);
+  //       }
+  //       formData.image = req.file.path.replace("source/public", "");
+  //     } else if (product.image == "/img/products/default.png") {
+  //       formData.image = "/img/products/default.png";
+  //     }
+  //     formData.status = "Pending";
+  //     await Product.updateOne({ _id: req.params.id }, formData);
+  //     res.render("message/processing-request");
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // };
+
+  // [POST] product/edit/save/:id
   updateProduct = async (req, res, next) => {
     try {
+      console.log('Starting product update process');
+  
       const formData = req.body;
+      console.log('Received form data:', formData);
+  
       const product = await Product.findById(req.params.id);
+      console.log(`Product found: ${product._id}`);
+  
       if (req.file) {
-        if (product.image != "/img/products/default.png") {
-          fs.unlinkSync(`./source/public${product.image}`);
-        }
-        formData.image = req.file.path.replace("source/public", "");
-      } else if (product.image == "/img/products/default.png") {
-        formData.image = "/img/products/default.png";
+          // Assuming the full server path is added before storing it, which needs to be removed
+          const imagePath = `./source/public${product.image}`; // Full path for server operations
+          console.log(`Handling new file upload, checking existing image at: ${imagePath}`);
+  
+          // Check and delete the existing image if it's not the default
+          if (product.image !== "\\img\products\default.png" && fs.existsSync(imagePath)) {
+            console.log('Existing image found, deleting...');
+            fs.unlinkSync(imagePath);
+          } else {
+            console.log('No existing image to delete or default image used');
+          }
+  
+          // Correctly remove 'source/public/' from the path before saving it in formData
+          console.log('req.file.path:', req.file.path);
+          formData.image = '/' + path.normalize(req.file.path).replace(/\\/g, '/').replace('source/public/', '');
+          console.log('Updated image path for formData:', formData.image);
+      } else if (product.image === "\\img\products\default.png") {
+          formData.image = "/img/products/default.png";
+          console.log('Using default image for product');
       }
+  
       formData.status = "Pending";
+      console.log('Set product status to Pending');
+  
       await Product.updateOne({ _id: req.params.id }, formData);
+      console.log(`Product update complete for ID: ${req.params.id}`);
+  
       res.render("message/processing-request");
+      console.log('Processing request message rendered');
     } catch (err) {
+      console.error('Error during product update:', err);
       next(err);
     }
   };
@@ -503,7 +551,6 @@ class productController {
   showSpecificProduct = async (req, res, next) => {
     try {
       const productId = req.params.id;
-
       const product = await Product.findOne({ _id: productId });
       const details = product.description.split("\n");
       const evaluates = await Evaluate.find({ idProduct: productId })
@@ -548,6 +595,7 @@ class productController {
       res.locals.evaluates = mutipleMongooseToObject(evaluates);
 
       res.render("specific-product", {
+        stock: product.stock,
         formatCurrency: formatCurrency,
       });
     } catch (error) {

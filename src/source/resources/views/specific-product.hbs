@@ -62,7 +62,7 @@
             <i class="fa-solid fa-minus"></i>
           </a>
         </div>
-        <div class="available-product ms-5"><span>{{product.stock}}</span>
+        <div class="available-product ms-5"><span>{{stock}}</span>
           available products</div>
       </div>
 
@@ -225,3 +225,32 @@
 
 {{! <script src="/js/specific-product-getQuantity.js"></script> }}
 <script src="/js/specific-product.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buyNowBtn = document.getElementById('buy-now-btn');
+    const quantitySpan = document.querySelector('.quantity-number');
+
+    buyNowBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        const productID = '{{product._id}}';
+        const quantity = parseInt(quantitySpan.textContent);
+        const newURL = `/order/payment/${productID}?quantity=${quantity}`;
+        window.location.href = newURL;
+    });
+
+    // Ensure socket.io connection is established and then watch the product
+    const socket = io();
+
+    // Emit the productView event with the product ID
+    socket.emit('productView', '{{product._id}}');
+
+    socket.on('stockUpdate', (data) => {
+        const stockInfo = document.querySelector('.available-product span');
+        if (stockInfo && data.productId === '{{product._id}}') {
+            stockInfo.textContent = data.stock + ' available products';
+        }
+    });
+});
+</script>
