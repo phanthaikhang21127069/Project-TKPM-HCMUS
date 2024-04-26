@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const product = require("./product.model");
+// const product = require("./product.model");
 
 const accountSchema = new mongoose.Schema(
   {

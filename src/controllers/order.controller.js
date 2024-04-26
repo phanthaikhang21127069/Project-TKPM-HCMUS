@@ -109,6 +109,10 @@ class orderController {
         { _id: orderId },
         { $set: { status: "successful" } }
       );
+
+      // Emit an event to update order status in the buyer's view
+      io.emit('orderStatusChange', { orderId: orderId, newStatus: "successful" });
+
       res.redirect("back");
     } catch (error) {
       next(error);
@@ -154,28 +158,17 @@ class orderController {
   placeOrder = async (req, res, next) => {
     try {
       const accBuyer = await Account.findOne({ _id: req.user.id });
-      const product = await Product.findOne({ _id: req.params._id }).populate(
-        "idAccount"
-      );
-      const idSeller = product.idAccount;
-
-      const newOrder = new Order({
-        idAccount: accBuyer._id,
-        idSeller: idSeller,
-        detail: [
-          {
-            idProduct: product._id,
-            quantity: req.query.quantity,
-            isEvaluated: false,
-          },
-        ],
-        status: "pending",
-        message: req.body.message,
-      });
-
-      await newOrder.save(); // Lưu order mới vào MongoDB
+      const product = await Product.findOne({ _id: req.params._id }).populate("idAccount");
+  
+      const orderDetails = [{
+        idSeller: product.idAccount,
+        idProduct: product._id,
+        quantity: req.query.quantity
+      }];
+  
+      await this.createAndSaveOrder(accBuyer, orderDetails, req.body.message);
       res.redirect(`/account/my-order-pending/${req.user.id}`);
-    } catch (err) {
+    } catch (error) {
       next(error);
     }
   };
@@ -185,41 +178,140 @@ class orderController {
       const accBuyer = await Account.findOne({ _id: req.user.id })
         .populate("cart._id")
         .populate("cart._id.idAccount");
-
-      const orders = accBuyer.cart.map((cartItem) => {
-        const idSeller = cartItem._id.idAccount;
-        const newOrder = new Order({
-          idAccount: accBuyer._id,
-          idSeller: idSeller,
-          detail: [
-            {
-              idProduct: cartItem._id._id,
-              quantity: cartItem.quantity,
-              isEvaluated: false,
-            },
-          ],
-          status: "pending",
-          message: req.body.message, // Cần lấy từ form đầu vào
-        });
-        return newOrder;
-      });
-
-      const savedOrders = await Order.insertMany(orders);
-      // Xóa các sản phẩm đã được đặt hàng khỏi giỏ hàng
+  
+      const orderDetails = accBuyer.cart.map(cartItem => ({
+        idSeller: cartItem._id.idAccount,
+        idProduct: cartItem._id._id,
+        quantity: cartItem.quantity
+      }));
+  
+      const savedOrders = await this.createAndSaveOrder(accBuyer, orderDetails, req.body.message);
+  
+      // Filter out items that have been ordered
       accBuyer.cart = accBuyer.cart.filter(
-        (cartItem) =>
-          !savedOrders.some((savedOrder) =>
-            savedOrder.detail[0].idProduct.equals(cartItem._id._id)
-          )
+        cartItem => !savedOrders.some(
+          savedOrder => savedOrder.detail[0].idProduct.equals(cartItem._id._id)
+        )
       );
-      req.session.cart = []; // Remove trong session
+      req.session.cart = [];
       await accBuyer.save();
-
+  
       res.redirect(`/account/my-order-pending/${req.user.id}`);
     } catch (error) {
       next(error);
     }
-  };
+  };  
+
+  createAndSaveOrder = async (accBuyer, details, message) => {
+    const io = getIo();
+    const orders = details.map(detail => {
+        return new Order({
+            idAccount: accBuyer._id,
+            idSeller: detail.idSeller,
+            detail: [{
+                idProduct: detail.idProduct,
+                quantity: detail.quantity,
+                isEvaluated: false
+            }],
+            status: "pending",
+            message: message
+        });
+    });
+
+    const savedOrders = await Order.insertMany(orders);
+
+    // Fetch orders again with populated fields, including product details
+    const populatedOrders = await Promise.all(savedOrders.map(async order => {
+        return await Order.findById(order._id)
+                           .populate({
+                               path: 'idAccount'
+                           })
+                           .populate({
+                               path: 'detail.idProduct',
+                               select: 'name image category price'  // Specify the fields you need from the product
+                           });
+    }));
+
+    // Emit an event after saving and populating orders successfully
+    populatedOrders.forEach(order => {
+        io.emit('orderUpdate', {
+            order: order,
+            message: 'New pending order created'
+        });
+    });
+
+    return populatedOrders;
+};
+
+  // placeOrder = async (req, res, next) => {
+  //   try {
+  //     const accBuyer = await Account.findOne({ _id: req.user.id });
+  //     const product = await Product.findOne({ _id: req.params._id }).populate(
+  //       "idAccount"
+  //     );
+  //     const idSeller = product.idAccount;
+
+  //     const newOrder = new Order({
+  //       idAccount: accBuyer._id,
+  //       idSeller: idSeller,
+  //       detail: [
+  //         {
+  //           idProduct: product._id,
+  //           quantity: req.query.quantity,
+  //           isEvaluated: false,
+  //         },
+  //       ],
+  //       status: "pending",
+  //       message: req.body.message,
+  //     });
+
+  //     await newOrder.save(); // Lưu order mới vào MongoDB
+  //     res.redirect(`/account/my-order-pending/${req.user.id}`);
+  //   } catch (err) {
+  //     next(error);
+  //   }
+  // };
+
+  // placeOrderForCart = async (req, res, next) => {
+  //   try {
+  //     const accBuyer = await Account.findOne({ _id: req.user.id })
+  //       .populate("cart._id")
+  //       .populate("cart._id.idAccount");
+
+  //     const orders = accBuyer.cart.map((cartItem) => {
+  //       const idSeller = cartItem._id.idAccount;
+  //       const newOrder = new Order({
+  //         idAccount: accBuyer._id,
+  //         idSeller: idSeller,
+  //         detail: [
+  //           {
+  //             idProduct: cartItem._id._id,
+  //             quantity: cartItem.quantity,
+  //             isEvaluated: false,
+  //           },
+  //         ],
+  //         status: "pending",
+  //         message: req.body.message, // Cần lấy từ form đầu vào
+  //       });
+  //       return newOrder;
+  //     });
+
+  //     const savedOrders = await Order.insertMany(orders);
+  //     // Xóa các sản phẩm đã được đặt hàng khỏi giỏ hàng
+  //     accBuyer.cart = accBuyer.cart.filter(
+  //       (cartItem) =>
+  //         !savedOrders.some((savedOrder) =>
+  //           savedOrder.detail[0].idProduct.equals(cartItem._id._id)
+  //         )
+  //     );
+  //     req.session.cart = []; // Remove trong session
+  //     await accBuyer.save();
+
+  //     res.redirect(`/account/my-order-pending/${req.user.id}`);
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
 }
 
 module.exports = new orderController();
