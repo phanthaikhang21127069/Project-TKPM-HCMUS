@@ -1,10 +1,9 @@
 const express = require("express");
 const evaluateController = require("../controllers/evaluate.controller");
-const acccountController = require("../controllers/account.controller");
 const accountController = require("../controllers/account.controller");
 const router = express.Router();
 
-router.use(acccountController.isLoggedIn);
+router.use(accountController.isLoggedIn);
 // ######################## BUYER #########################
 router.put("/specific-product/:id/report", evaluateController.reportEvaluate);
 router.post("/specific-product/:id/create", evaluateController.createEvaluate);
@@ -15,7 +14,7 @@ router.use(accountController.isSeller);
 router.get("/review", evaluateController.showEvaluate);
 router.post("/review/:id/reply", evaluateController.replyEvaluate);
 // #########################################################
-router.use(acccountController.isAdmin);
+router.use(accountController.isAdmin);
 // ######################### ADMIN ##########################
 router.get("/all", evaluateController.getAllEvaluate);
 router.get("/reported", evaluateController.getReportedEvaluate);

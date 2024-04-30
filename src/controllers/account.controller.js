@@ -5,7 +5,7 @@ const Evaluate = require("../models/evaluate.model");
 const AccountRepository = require('../repositories/AccountRepository');
 const OrderRepository = require('../repositories/OrderRepository');
 const fs = require("fs");
-const path = require("path");
+// const path = require("path");
 const passport = require("passport");
 const { sendForgotPasswordMail } = require("../utils/mail");
 const bcrypt = require("bcrypt");
@@ -13,8 +13,8 @@ const {
   mutipleMongooseToObject,
   mongooseToObject,
 } = require("../utils/mongoose");
-const mongoose = require("../utils/mongoose");
-class acccountController {
+// const mongoose = require("../utils/mongoose");
+class accountController {
   // [GET] account/sign-up
   getSignUp = async (req, res, next) => {
     try {
@@ -584,4 +584,4 @@ class acccountController {
   }
 }
 
-module.exports = new acccountController();
+module.exports = new accountController();

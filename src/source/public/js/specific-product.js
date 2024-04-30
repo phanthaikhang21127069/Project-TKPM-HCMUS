@@ -1,3 +1,9 @@
+// Observer Function in UI
+function updateStockDisplay(stock) {
+  const stockElement = document.querySelector('.available-product span');
+  stockElement.textContent = stock + ' available products';
+}
+
 async function addCart(id, quantity) {
   try {
     if (quantity > 0) {

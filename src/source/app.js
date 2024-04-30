@@ -1,4 +1,6 @@
 const express = require("express");
+const http = require('http');
+// const socketIo = require('socket.io');
 const hbs = require("express-handlebars");
 const path = require("path");
 const methodOverride = require("method-override");
@@ -19,6 +21,9 @@ redisClient.connect().catch(console.error);
 
 const liveReloadServer = livereload.createServer();
 const app = express();
+// socket.io
+const server = http.createServer(app);
+
 // Livereload for automatically refresh browser
 liveReloadServer.server.once("connection", () => {
   setTimeout(() => {
@@ -45,6 +50,10 @@ app.engine(
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "resources/views"));
+
+// socket.io
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Cấu hình sử dụng express session
 app.use(
@@ -103,4 +112,4 @@ app.use((req, res, next) => {
 // ROUTES INIT
 route(app);
 
-module.exports = app;
+module.exports = { app, server};

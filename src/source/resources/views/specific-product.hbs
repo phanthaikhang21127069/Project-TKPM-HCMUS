@@ -62,7 +62,7 @@
             <i class="fa-solid fa-minus"></i>
           </a>
         </div>
-        <div class="available-product ms-5"><span>{{product.stock}}</span>
+        <div class="available-product ms-5"><span>{{stock}}</span>
           available products</div>
       </div>
 
@@ -225,3 +225,27 @@
 
 {{! <script src="/js/specific-product-getQuantity.js"></script> }}
 <script src="/js/specific-product.js"></script>
+
+
+{{!-- Socket.IO operates on a different layer, handling WebSocket connections independently from the HTTP routing logic of Express --}}
+<script src="/socket.io/socket.io.js"></script>
+{{!-- <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const socket = io();  // Make sure the socket.io client library is correctly included in your HTML
+
+    // The client informs the server which product’s updates it wants to subscribe to
+    socket.emit('productView', '{{product._id}}');
+
+    // As stock updates are pushed by the server, your client-side code should handle these updates to dynamically update the UI
+    socket.on('stockUpdate', (data) => {
+        const stockInfo = document.querySelector('.available-product span');
+        // console.log('Stock updated', stockInfo, data.productId, '{{product._id}}');
+        // Ensure data.productId and '{{product._id}}' are both strings; you might need to ensure type consistency
+        if (stockInfo && data.productId === '{{product._id}}') {
+            stockInfo.textContent = `${data.newStock}`;
+            // console.log('UI updated with new stock:', stockInfo.textContent);
+        }
+    });
+});
+</script>

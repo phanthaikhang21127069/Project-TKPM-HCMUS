@@ -1,3 +1,4 @@
+// Consolidating error messages into a single string is a practical way to handle errors.
 const { body, validationResult } = require('express-validator');
 
 function getErrorMessage(req) {

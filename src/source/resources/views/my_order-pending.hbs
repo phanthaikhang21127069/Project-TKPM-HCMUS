@@ -65,7 +65,7 @@
 
                 {{#each orders}}
                     {{#each this.detail}}
-                <div class="card">
+                <div class="card" data-order-id="{{this._id}}">
                     <div class="card-header alert alert-primary" role="alert">
                         <i class="fa-solid fa-bag-shopping"></i>
                         {{../this.idSeller.shopName}}
@@ -104,8 +104,24 @@
     </div>
 </div>
 
+{{!-- <script src='js/my-order.js'></script> --}}
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const socket = io();
 
-
-{{!--
-<script src='js/my-order.js'></script> --}}
+    // Listen for order status changes
+    socket.on('orderStatusChange', function (data) {
+        console.log('Order status updated:', data);
+        // Assume each order card has an ID attribute `data-order-id`
+        console.log(data.orderId);
+        const orderCard = document.querySelector(`.card[data-order-id="${data.orderId}"]`);
+        console.log(orderCard);
+        if (orderCard) {
+            // Update the UI to reflect the order is now successful
+            orderCard.remove(); // or update its status visually instead of removing
+        }
+    });
+});
+</script>
