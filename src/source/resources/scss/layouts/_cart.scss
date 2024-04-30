@@ -79,7 +79,6 @@
       color: $color-text-dark;
     }
   }
-
   .col-3.slide {
     transform: translateX(0);
   }
@@ -88,6 +87,7 @@
     position: relative;
     margin-top: 3rem;
   }
+
   .cart-heading:after {
     @include abs-pos(calc(100% + 1rem));
     @include box(14rem, 0.4rem, $color-primary);

@@ -37,12 +37,20 @@
 }
 
 .banner-img {
+  border-radius: 20px;
   background: linear-gradient(
       0deg,
       rgba(49, 56, 62, 0.3) 0%,
       rgba(49, 56, 62, 0.3) 100%
     ),
     lightgray 50% / cover no-repeat;
+  transition: transform 0.3s ease; /* Add smooth transition */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Apply box shadow on hover */
+
+}
+
+.banner-img:hover  {
+  transform: scale(1.1); /* Zoom in to 110% */
 }
 
 .banner-article {
@@ -88,25 +96,38 @@
     margin-top: 4rem;
   }
   .trend-card {
-    margin: 0 0rem;
-    border-radius: 0;
-    border: 1px solid #31383e;
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #dfebf5;
     padding: 0 0;
+    box-shadow: 0 0.5em 0.5em -0.4em #064174;
   }
   .trend-card-img {
     background-color: #fff;
-    height: 30rem;
-    .trend-prod-img {
-      height: 100%;
-      object-fit: contain;
-    }
+    text-align: center;
+    height: 25rem;
+    border-radius: 10px;
+    margin: 10px;
+    overflow: hidden; /* Ensure overflow doesn't affect layout */
+  }
+  
+  .trend-card-img:hover .trend-prod-img {
+    transform: scale(1.1); /* Zoom in to 110% on hover */
+    transition: transform 0.3s ease; /* Add smooth transition */
+  }
+  
+  .trend-prod-img {
+    height: 100%; /* Ensure the image fills its container */
+    width: 100%; /* Ensure the image fills its container */
+    object-fit: cover; /* Ensure the image is fully visible and covers its container */
   }
   .trend-card-title {
     color: #000;
     font-family: Inter;
     font-size: 1.5rem;
     font-weight: 500;
-
+    margin: 0 5px;
     padding: 0 0.5rem;
   }
   .trend-card-price {
@@ -115,12 +136,30 @@
     font-weight: 700;
   }
   .trend-card-btn {
+    border: 1px solid transparent;
     text-transform: uppercase;
-    border-radius: 0;
-    background: #31383e;
-    font-weight: 700;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    background: #0a4f8b;
     color: #fff;
+    font-weight: 700;
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; /* Add smooth transition */
   }
+  
+  .trend-card-btn:hover,
+  .trend-card-btn:focus {
+    border: 1px solid #044985;
+    box-shadow: 0 0.5em 0.5em -0.4em #0d74cf; /* Add transparent box shadow */
+    color: #0a4f8b;
+    font-weight: 700;
+    background-color: #fff;
+    border-color: #0a4f8b;
+    transform: translateY(-0.25em);
+    transition: transform 0.3s ease; /* Add smooth transition */
+  }
+
   figure {
     a.btn:link,
     a.btn:visited {
@@ -136,16 +175,30 @@
     justify-content: center;
     .trend-btn {
       width: 15vw;
-      text-transform: uppercase;
-      font-weight: 700;
-      border: 3px solid #337ab7;
-      background: #fff;
       border-radius: 15px;
-      color: #337ab7;
-    }
-    .trend-btn:hover {
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      border-radius: 10px;
+      margin: 10px;
+      padding: 10px;
+      text-align: center;
+      background: #0a4f8b;
       color: #fff;
-      background-color: #337ab7;
+      font-weight: 700;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; 
+    }
+    .trend-btn:hover,
+    .trend-btn:focus {
+      border: 1px solid #044985;
+      color: #0a4f8b;
+      font-weight: 700;
+      background-color: #fff;
+      border-color: #0a4f8b;
+      animation: pulse 1s;
+      box-shadow: 0 0 0 2em transparent;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 #bad8f3; }
     }
   }
 }
