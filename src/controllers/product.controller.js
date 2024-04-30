@@ -479,38 +479,96 @@ class productController {
   };
 
   // [GET] product/all-product/search
+  // searchProduct = async (req, res, next) => {
+  //   try {
+  //     const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
+  //     const limit = 8;
+  //     const offset = (page - 1) * limit;
+      
+  //     const keyword = req.query.keyword || "";
+  //     if (keyword.trim() != "") {
+  //       const options = { $or: [{ status: "Available" }, { status: "Reported" }] };
+
+  //       const products = await ProductRepository.searchProductsByKeyword(keyword, options, { offset, limit });
+  //       const categories = await ProductRepository.aggregateCategories(["Available", "Reported"]);
+  //       const numberOfItems = await ProductRepository.countProductsByKeyword(keyword, options);
+
+  //       res.locals = {
+  //         _numberOfItems: numberOfItems,
+  //         _limit: limit,
+  //         _currentPage: page,
+  //         categories: categories,
+  //         products: mutipleMongooseToObject(products)
+  //       };
+
+  //       res.render("all-product");
+  //     } else {
+  //       res.redirect("back");
+  //     }
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
+
   searchProduct = async (req, res, next) => {
     try {
-      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
+      let page = isNaN(req.query.page)
+        ? 1
+        : Math.max(1, parseInt(req.query.page));
       const limit = 8;
       const offset = (page - 1) * limit;
-      
+
       const keyword = req.query.keyword || "";
       if (keyword.trim() != "") {
+        const regex = new RegExp(keyword, "i");
         const options = { $or: [{ status: "Available" }, { status: "Reported" }] };
 
         const products = await ProductRepository.searchProductsByKeyword(keyword, options, { offset, limit });
         const categories = await ProductRepository.aggregateCategories(["Available", "Reported"]);
         const numberOfItems = await ProductRepository.countProductsByKeyword(keyword, options);
+        res.locals._limit = limit;
+        res.locals._currentPage = page;
+        res.locals._numberOfItems = numberOfItems;
 
-        res.locals = {
-          _numberOfItems: numberOfItems,
-          _limit: limit,
-          _currentPage: page,
-          categories: categories,
-          products: mutipleMongooseToObject(products)
-        };
-
+        res.locals.categories = categories;
+        res.locals.products = mutipleMongooseToObject(products);
         res.render("all-product");
-      } else {
-        res.redirect("back");
-      }
+      } else res.redirect("back");
     } catch (error) {
       next(error);
     }
   };
 
   // [GET] product/specific-product
+  // showSpecificProduct = async (req, res, next) => {
+  //   try {
+  //     const productId = req.params.id;
+
+  //     const product = await ProductRepository.findProductById(productId);
+  //     const details = product.description.split("\n");
+  //     const evaluates = await ProductRepository.findEvaluationsByProductId(productId);
+  //     const evaNumber = await ProductRepository.countEvaluationsByProductId(productId);
+  //     const avgRating = await ProductRepository.calculateAverageRating(productId);
+  //     const related = await ProductRepository.findRelatedProducts(product.keyword);
+
+  //     res.locals = {
+  //       evaNumber: evaNumber,
+  //       details: details,
+  //       product: mongooseToObject(product),
+  //       stars: avgRating,
+  //       related: related,
+  //       evaluates: mutipleMongooseToObject(evaluates)
+  //     };
+
+  //     res.render("specific-product", {
+  //       stock: product.stock,
+  //       formatCurrency: formatCurrency,
+  //     });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
+
   showSpecificProduct = async (req, res, next) => {
     try {
       const productId = req.params.id;
@@ -522,14 +580,12 @@ class productController {
       const avgRating = await ProductRepository.calculateAverageRating(productId);
       const related = await ProductRepository.findRelatedProducts(product.keyword);
 
-      res.locals = {
-        evaNumber: evaNumber,
-        details: details,
-        product: mongooseToObject(product),
-        stars: avgRating,
-        related: related,
-        evaluates: mutipleMongooseToObject(evaluates)
-      };
+      res.locals.evaNumber = evaNumber;
+      res.locals.details = details;
+      res.locals.product = mongooseToObject(product);
+      res.locals.stars = avgRating;
+      res.locals.related = related;
+      res.locals.evaluates = mutipleMongooseToObject(evaluates);
 
       res.render("specific-product", {
         stock: product.stock,
