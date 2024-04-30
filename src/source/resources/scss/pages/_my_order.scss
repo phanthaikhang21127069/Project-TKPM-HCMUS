@@ -21,6 +21,8 @@
       li {
         width: 33.33333%;
         height: 100%;
+        border-radius: 20px;
+        margin-right: 10px;
         a {
           height: 80%;
           display: flex;
@@ -28,10 +30,18 @@
           align-items: center;
           font-size: 1.5rem;
           color: rgba(0, 0, 0, 0.68);
-          // :hover{
-          //     color: white;
-          // }
         }
+      }
+      a:hover,
+      a:focus {
+        border: 1px solid #044985;
+        box-shadow: 0 0.5em 0.5em -0.4em #0d74cf; /* Add transparent box shadow */
+        color: #0a4f8b;
+        font-weight: 700;
+        background-color: #fff;
+        border-color: #0a4f8b;
+        transform: translateY(-0.25em);
+        transition: transform 0.3s ease; /* Add smooth transition */
       }
     }
   }
@@ -39,6 +49,7 @@
   .card {
     margin-top: -2rem;
     margin-bottom: 4rem;
+    box-shadow: 0 0.5em 0.5em -0.4em #235887;
     // min-width: 21.5rem;
     .card-body {
       padding-top: 0%;

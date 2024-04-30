@@ -64,7 +64,7 @@
 
     .my-account {
       width: 100%;
-      height: 7%;
+      height: 5%;
       display: flex;
 
       a {
@@ -93,11 +93,16 @@
           text-transform: capitalize;
         }
       }
+      button:hover{
+        background-color: rgba(1, 42, 97, 0.905);
+        transition: transform 0.3s ease; /* Add smooth transition */
+
+      }
     }
 
     .my-order {
       width: 100%;
-      height: 7%;
+      height: 5%;
       display: flex;
 
       a {
@@ -127,11 +132,16 @@
           text-transform: capitalize;
         }
       }
+      button:hover{
+        background-color: rgba(1, 42, 97, 0.905);
+        transition: transform 0.3s ease; /* Add smooth transition */
+
+      }
     }
 
     .become-seller {
       width: 100%;
-      height: 7%;
+      height: 5%;
       display: flex;
 
       a {
@@ -161,6 +171,11 @@
           font-weight: 600;
           text-transform: capitalize;
         }
+      }
+      button:hover{
+        background-color: rgba(1, 42, 97, 0.905);
+        transition: transform 0.3s ease; /* Add smooth transition */
+
       }
     }
 

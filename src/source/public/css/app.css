@@ -579,7 +579,7 @@ a.btn:hover, a.btn:active, a.btn:first-child:active,
             color: white; }
   .account-profile-main .row .col-3 .my-account {
     width: 100%;
-    height: 7%;
+    height: 5%;
     display: flex; }
     .account-profile-main .row .col-3 .my-account a {
       width: 100%; }
@@ -600,9 +600,13 @@ a.btn:hover, a.btn:active, a.btn:first-child:active,
         font-size: 1.6rem;
         font-weight: 600;
         text-transform: capitalize; }
+    .account-profile-main .row .col-3 .my-account button:hover {
+      background-color: rgba(1, 42, 97, 0.905);
+      transition: transform 0.3s ease;
+      /* Add smooth transition */ }
   .account-profile-main .row .col-3 .my-order {
     width: 100%;
-    height: 7%;
+    height: 5%;
     display: flex; }
     .account-profile-main .row .col-3 .my-order a {
       width: 100%; }
@@ -624,9 +628,13 @@ a.btn:hover, a.btn:active, a.btn:first-child:active,
         font-size: 1.6rem;
         font-weight: 600;
         text-transform: capitalize; }
+    .account-profile-main .row .col-3 .my-order button:hover {
+      background-color: rgba(1, 42, 97, 0.905);
+      transition: transform 0.3s ease;
+      /* Add smooth transition */ }
   .account-profile-main .row .col-3 .become-seller {
     width: 100%;
-    height: 7%;
+    height: 5%;
     display: flex; }
     .account-profile-main .row .col-3 .become-seller a {
       width: 100%; }
@@ -649,6 +657,10 @@ a.btn:hover, a.btn:active, a.btn:first-child:active,
         font-size: 1.8rem;
         font-weight: 600;
         text-transform: capitalize; }
+    .account-profile-main .row .col-3 .become-seller button:hover {
+      background-color: rgba(1, 42, 97, 0.905);
+      transition: transform 0.3s ease;
+      /* Add smooth transition */ }
   .account-profile-main .row .col-3 .remain {
     width: 100%;
     padding-left: 2rem; }
@@ -1866,7 +1878,9 @@ section article.skills {
     padding: 0; }
     .col-9 nav ul li {
       width: 33.33333%;
-      height: 100%; }
+      height: 100%;
+      border-radius: 20px;
+      margin-right: 10px; }
       .col-9 nav ul li a {
         height: 80%;
         display: flex;
@@ -1874,10 +1888,23 @@ section article.skills {
         align-items: center;
         font-size: 1.5rem;
         color: rgba(0, 0, 0, 0.68); }
+    .col-9 nav ul a:hover,
+    .col-9 nav ul a:focus {
+      border: 1px solid #044985;
+      box-shadow: 0 0.5em 0.5em -0.4em #0d74cf;
+      /* Add transparent box shadow */
+      color: #0a4f8b;
+      font-weight: 700;
+      background-color: #fff;
+      border-color: #0a4f8b;
+      transform: translateY(-0.25em);
+      transition: transform 0.3s ease;
+      /* Add smooth transition */ }
 
 .col-9 .card {
   margin-top: -2rem;
-  margin-bottom: 4rem; }
+  margin-bottom: 4rem;
+  box-shadow: 0 0.5em 0.5em -0.4em #235887; }
   .col-9 .card .card-body {
     padding-top: 0%;
     padding-left: 2rem; }
