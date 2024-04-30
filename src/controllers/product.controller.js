@@ -3,6 +3,8 @@ const fs = require("fs");
 const Evaluate = require("../models/evaluate.model");
 const Account = require("../models/account.model");
 const Order = require("../models/order.model");
+const ProductRepository = require('../repositories/ProductRepository');
+
 
 const sequelize = require("sequelize");
 const Op = sequelize.Op;
@@ -397,51 +399,30 @@ class productController {
   // [GET] product/all-product/sort
   sortProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 8;
-
-      const type = req.query.sort;
-      const order = req.query.order;
-      let options = {};
+      const offset = (page - 1) * limit;
+      const sort = { [req.query.sort]: req.query.order };
+      
+      let options = { $or: [{ status: "Available" }, { status: "Reported" }] };
       if (req.query.category) {
         options.category = req.query.category;
       }
-      const keyword = req.query.keyword || "";
-      if (keyword.trim() != "") {
-        const regex = new RegExp(keyword, "i");
-        options.name = regex;
+      if (req.query.keyword && req.query.keyword.trim() !== "") {
+        options.name = new RegExp(req.query.keyword, "i");
       }
 
-      options.$or = [{ status: "Available" }, { status: "Reported" }];
+      const products = await ProductRepository.findProducts(options, sort, { offset, limit });
+      const categories = await ProductRepository.aggregateCategories(["Available", "Reported"]);
+      const numberOfItems = await ProductRepository.countProducts(options);
 
-      const products = await Product.find(options)
-        .sort({ [type]: order })
-        .skip((page - 1) * limit)
-        .limit(limit);
-      const categories = await Product.aggregate([
-        {
-          $match: {
-            status: { $in: ["Available", "Reported"] },
-          },
-        },
-        {
-          $group: {
-            _id: "$category",
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $sort: { _id: 1 },
-        },
-      ]);
-
-      res.locals._numberOfItems = await Product.find(options).countDocuments();
-      res.locals._limit = limit;
-      res.locals._currentPage = page;
-      res.locals.categories = categories;
-      res.locals.products = mutipleMongooseToObject(products);
+      res.locals = {
+        _numberOfItems: numberOfItems,
+        _limit: limit,
+        _currentPage: page,
+        categories: categories,
+        products: mutipleMongooseToObject(products)
+      };
 
       res.render("all-product");
     } catch (error) {
@@ -452,48 +433,30 @@ class productController {
   // [GET] product/all-product/search
   searchProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 8;
-
+      const offset = (page - 1) * limit;
+      
       const keyword = req.query.keyword || "";
       if (keyword.trim() != "") {
-        const regex = new RegExp(keyword, "i");
-        const products = await Product.find({
-          name: regex,
-          $or: [{ status: "Available" }, { status: "Reported" }],
-        })
-          .skip((page - 1) * limit)
-          .limit(limit);
+        const options = { $or: [{ status: "Available" }, { status: "Reported" }] };
 
-        const categories = await Product.aggregate([
-          {
-            $match: {
-              status: { $in: ["Available", "Reported"] },
-            },
-          },
-          {
-            $group: {
-              _id: "$category",
-              count: { $sum: 1 },
-            },
-          },
-          {
-            $sort: { _id: 1 },
-          },
-        ]);
-        res.locals._numberOfItems = await Product.find({
-          name: regex,
-          $or: [{ status: "Available" }, { status: "Reported" }],
-        }).countDocuments();
-        res.locals._limit = limit;
-        res.locals._currentPage = page;
+        const products = await ProductRepository.searchProductsByKeyword(keyword, options, { offset, limit });
+        const categories = await ProductRepository.aggregateCategories(["Available", "Reported"]);
+        const numberOfItems = await ProductRepository.countProductsByKeyword(keyword, options);
 
-        res.locals.categories = categories;
-        res.locals.products = mutipleMongooseToObject(products);
+        res.locals = {
+          _numberOfItems: numberOfItems,
+          _limit: limit,
+          _currentPage: page,
+          categories: categories,
+          products: mutipleMongooseToObject(products)
+        };
+
         res.render("all-product");
-      } else res.redirect("back");
+      } else {
+        res.redirect("back");
+      }
     } catch (error) {
       next(error);
     }
@@ -504,51 +467,24 @@ class productController {
     try {
       const productId = req.params.id;
 
-      const product = await Product.findOne({ _id: productId });
+      const product = await ProductRepository.findProductById(productId);
       const details = product.description.split("\n");
-      const evaluates = await Evaluate.find({ idProduct: productId })
-        .populate({
-          path: "idAccount",
-          select: "firstName lastName avatar",
-        })
-        .sort({ date: -1 });
+      const evaluates = await ProductRepository.findEvaluationsByProductId(productId);
+      const evaNumber = await ProductRepository.countEvaluationsByProductId(productId);
+      const avgRating = await ProductRepository.calculateAverageRating(productId);
+      const related = await ProductRepository.findRelatedProducts(product.keyword);
 
-      const evaNumber = await Evaluate.find({ idProduct: productId })
-        .populate({
-          path: "idAccount",
-          select: "firstName lastName avatar",
-        })
-        .sort({ date: -1 })
-        .countDocuments();
-      const ratings = await Evaluate.find({
-        idProduct: productId,
-        rating: { $ne: 0 },
-      }).select("rating");
-      const totalRatings = ratings.length;
-      const sumRatings = ratings.reduce(
-        (sum, rating) => sum + rating.rating,
-        0
-      );
-      const avgRating = sumRatings / totalRatings;
-
-      const related = await Product.aggregate([
-        {
-          $match: {
-            keyword: product.keyword,
-          },
-        },
-        { $limit: 6 },
-      ]);
-
-      res.locals.evaNumber = evaNumber;
-      res.locals.details = details;
-      res.locals.product = mongooseToObject(product);
-      res.locals.stars = avgRating;
-      res.locals.related = related;
-      res.locals.evaluates = mutipleMongooseToObject(evaluates);
+      res.locals = {
+        evaNumber: evaNumber,
+        details: details,
+        product: mongooseToObject(product),
+        stars: avgRating,
+        related: related,
+        evaluates: mutipleMongooseToObject(evaluates)
+      };
 
       res.render("specific-product", {
-        formatCurrency: formatCurrency,
+        formatCurrency: formatCurrency, // Ensure this helper is defined or imported
       });
     } catch (error) {
       next(error);
@@ -559,10 +495,7 @@ class productController {
   reportProduct = async (req, res, next) => {
     try {
       const productId = req.params.id;
-      await Product.updateOne(
-        { _id: productId },
-        { $set: { status: "Reported" } }
-      );
+      await ProductRepository.updateProductStatus(productId, "Reported");
       res.redirect("back");
     } catch (error) {
       next(error);
@@ -572,21 +505,18 @@ class productController {
   // [GET] product/full
   getFullProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
-
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 10;
-      const product1 = await Product.find()
-        .populate("idAccount")
-        .sort({ time: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+
+      const product1 = await ProductRepository.findAllProductsPaginated(page, limit);
       const allProducts = mutipleMongooseToObject(product1);
 
-      res.locals._numberOfItems = await Product.find().countDocuments();
+      const numberOfItems = await ProductRepository.countAllProducts();
+
+      res.locals._numberOfItems = numberOfItems;
       res.locals._limit = limit;
       res.locals._currentPage = page;
+
       res.render("admin_product_all", {
         products: allProducts,
         numOfProducts: allProducts.length,
@@ -599,23 +529,18 @@ class productController {
   // [GET] product/banned
   getBannedProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
-
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 10;
-      const product1 = await Product.find({ status: "Banned" })
-        .populate("idAccount")
-        .sort({ time: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+
+      const product1 = await ProductRepository.findBannedProductsPaginated(page, limit);
       const allProducts = mutipleMongooseToObject(product1);
 
-      res.locals._numberOfItems = await Product.find({
-        status: "Banned",
-      }).countDocuments();
+      const numberOfItems = await ProductRepository.countBannedProducts();
+
+      res.locals._numberOfItems = numberOfItems;
       res.locals._limit = limit;
       res.locals._currentPage = page;
+
       res.render("admin_product_banned", {
         products: allProducts,
         numOfProducts: allProducts.length,
@@ -628,22 +553,18 @@ class productController {
   // [GET] reported/pending
   getPendingProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
-
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 10;
-      const product1 = await Product.find({ status: "Pending" })
-        .populate("idAccount")
-        .sort({ time: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+
+      const product1 = await ProductRepository.findPendingProductsPaginated(page, limit);
       const allProducts = mutipleMongooseToObject(product1);
-      res.locals._numberOfItems = await Product.find({
-        status: "Pending",
-      }).countDocuments();
+
+      const numberOfItems = await ProductRepository.countPendingProducts();
+
+      res.locals._numberOfItems = numberOfItems;
       res.locals._limit = limit;
       res.locals._currentPage = page;
+
       res.render("admin_product_pending", {
         products: allProducts,
         numOfProducts: allProducts.length,
@@ -656,22 +577,18 @@ class productController {
   // [GET] product/reported
   getReportedProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
-
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 10;
-      const product1 = await Product.find({ status: "Reported" })
-        .populate("idAccount")
-        .sort({ time: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+
+      const product1 = await ProductRepository.findReportedProductsPaginated(page, limit);
       const allProducts = mutipleMongooseToObject(product1);
-      res.locals._numberOfItems = await Product.find({
-        status: "Reported",
-      }).countDocuments();
+
+      const numberOfItems = await ProductRepository.countReportedProducts();
+
+      res.locals._numberOfItems = numberOfItems;
       res.locals._limit = limit;
       res.locals._currentPage = page;
+
       res.render("admin_product_reported", {
         products: allProducts,
         numOfProducts: allProducts.length,
@@ -684,24 +601,18 @@ class productController {
   // [GET] product/trending
   getTrendProduct = async (req, res, next) => {
     try {
-      let page = isNaN(req.query.page)
-        ? 1
-        : Math.max(1, parseInt(req.query.page));
-
+      const page = isNaN(req.query.page) ? 1 : Math.max(1, parseInt(req.query.page));
       const limit = 10;
-      const product1 = await Product.find({
-        $or: [{ status: "Available", isTrend: true }, { status: "Trending" }],
-      })
-        .populate("idAccount")
-        .sort({ time: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+
+      const product1 = await ProductRepository.findTrendingProductsPaginated(page, limit);
       const allProducts = mutipleMongooseToObject(product1);
-      res.locals._numberOfItems = await Product.find({
-        $or: [{ status: "Available", isTrend: true }, { status: "Trending" }],
-      }).countDocuments();
+
+      const numberOfItems = await ProductRepository.countTrendingProducts();
+
+      res.locals._numberOfItems = numberOfItems;
       res.locals._limit = limit;
       res.locals._currentPage = page;
+
       res.render("admin_product_trending", {
         products: allProducts,
         numOfProducts: allProducts.length,
@@ -714,23 +625,10 @@ class productController {
   // [POST] account/exec-product
   executeProduct = async (req, res, next) => {
     try {
-      const product = await Product.findById(req.query.id);
-      const type = req.query.type;
-      if (type == "ban" || type == "deny") {
-        // ban unban accept deny (request) remove (reported) acptrend denytrend
-        product.status = "Banned";
-      } else if (type == "unban" || type == "remove" || type == "accept") {
-        product.status = "Available";
-      } else if (type == "acptrend") {
-        product.status = "Available";
-        product.isTrend = true;
-      } else if (type == "denytrend") {
-        product.status = "Pending";
-        product.isTrend = false;
-      } else {
-        product.status = "Available";
-      }
-      await product.save();
+      const productId = req.query.id;
+      const actionType = req.query.type;
+
+      await ProductRepository.updateProductStatusById(productId, actionType);
       res.redirect("back");
     } catch (err) {
       next(err);
